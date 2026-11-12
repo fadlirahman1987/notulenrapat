@@ -1,0 +1,256 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#7c3aed">
+  <meta name="robots" content="noindex,nofollow">
+  <title>Notulen Rapat</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js" defer></script>
+</head>
+<body>
+
+  <!-- ================= LOGIN ================= -->
+  <section id="view-login" class="login hidden">
+    <div class="login-hero">
+      <div class="hero-blob b1"></div>
+      <div class="hero-blob b2"></div>
+      <div class="brand brand-light">
+        <div class="brand-mark"><i data-lucide="notebook-pen"></i></div>
+        <span>Notulen Rapat</span>
+      </div>
+      <h1>Catat rapat, pantau tindak lanjut, cetak laporan.</h1>
+      <ul class="hero-list">
+        <li><span class="dot"><i data-lucide="lightbulb"></i></span> Pembahasan tertata per poin dalam kotak yang rapi</li>
+        <li><span class="dot"><i data-lucide="clipboard-check"></i></span> Tindak lanjut lengkap dengan PIC dan tenggat</li>
+        <li><span class="dot"><i data-lucide="bar-chart-2"></i></span> Laporan periodik siap cetak atau disimpan PDF</li>
+      </ul>
+    </div>
+
+    <div class="login-panel">
+      <form id="form-login" class="login-card" autocomplete="off">
+        <div>
+          <h2>Selamat datang</h2>
+          <p class="muted">Masuk dengan akun Anda untuk melanjutkan.</p>
+        </div>
+
+        <label class="field">Username
+          <span class="input-icon">
+            <i data-lucide="user"></i>
+            <input name="username" required autocomplete="username" maxlength="100" placeholder="contoh: budi">
+          </span>
+        </label>
+
+        <label class="field">Password
+          <span class="input-icon">
+            <i data-lucide="lock"></i>
+            <input type="password" name="password" required autocomplete="current-password" maxlength="200" placeholder="••••••••">
+            <button type="button" id="btn-pw" class="pw-toggle" title="Tampilkan password"><i data-lucide="eye"></i></button>
+          </span>
+        </label>
+
+        <div id="login-error" class="alert hidden" role="alert"></div>
+
+        <button class="btn btn-primary btn-lg btn-block" type="submit">
+          <span>Masuk</span> <i data-lucide="arrow-right"></i>
+        </button>
+      </form>
+    </div>
+  </section>
+
+  <!-- ================= APLIKASI ================= -->
+  <div id="view-app" class="app hidden">
+
+    <!-- Top bar (mobile) -->
+    <header class="topbar">
+      <div class="brand">
+        <div class="brand-mark"><i data-lucide="notebook-pen"></i></div>
+        <span>Notulen</span>
+      </div>
+      <div class="topbar-right">
+        <span id="user-chip" class="user-chip">-</span>
+        <button id="btn-logout-m" class="icon-btn" title="Keluar"><i data-lucide="log-out"></i></button>
+      </div>
+    </header>
+
+    <!-- Sidebar (tablet & desktop) -->
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="brand-mark"><i data-lucide="notebook-pen"></i></div>
+        <div class="brand-text"><strong>Notulen</strong><small>Rapat &amp; Laporan</small></div>
+      </div>
+
+      <nav class="nav">
+        <button class="nav-btn active" data-nav="list"><i data-lucide="layout-list"></i><span>Daftar Rapat</span></button>
+        <button class="nav-btn" data-nav="report"><i data-lucide="bar-chart-2"></i><span>Laporan</span></button>
+      </nav>
+
+      <div class="user-box">
+        <div class="avatar" id="user-initial">A</div>
+        <div class="user-meta">
+          <strong id="user-name">-</strong>
+          <small id="user-role">-</small>
+        </div>
+        <button id="btn-logout" class="icon-btn" title="Keluar"><i data-lucide="log-out"></i></button>
+      </div>
+    </aside>
+
+    <main class="main">
+
+      <!-- ===== Daftar rapat ===== -->
+      <section id="page-list" class="page">
+        <header class="page-head">
+          <div>
+            <h2>Daftar Rapat</h2>
+            <p class="muted">Kelola notulen dan tindak lanjut rapat Anda</p>
+          </div>
+          <button id="btn-new" class="btn btn-primary"><i data-lucide="plus"></i> Rapat Baru</button>
+        </header>
+
+        <div id="list-stats" class="stats"></div>
+
+        <label class="search-box">
+          <i data-lucide="search"></i>
+          <input id="search" type="search" placeholder="Cari judul, pimpinan, tempat…">
+        </label>
+
+        <div id="meeting-list" class="cards"></div>
+      </section>
+
+      <!-- ===== Editor notulen ===== -->
+      <section id="page-editor" class="page hidden">
+        <form id="form-meeting" class="editor">
+          <header class="page-head">
+            <div>
+              <button type="button" id="btn-back" class="btn btn-ghost btn-sm back-btn"><i data-lucide="arrow-left"></i> Kembali</button>
+              <h2 id="editor-title">Rapat Baru</h2>
+            </div>
+            <div class="actions">
+              <button type="button" id="btn-print-minutes" class="btn btn-soft"><i data-lucide="printer"></i> Cetak</button>
+              <button type="submit" class="btn btn-primary"><i data-lucide="save"></i> Simpan</button>
+            </div>
+          </header>
+
+          <!-- Informasi -->
+          <div class="card sec" style="--c:#6366f1">
+            <div class="sec-head">
+              <span class="sec-icon"><i data-lucide="info"></i></span>
+              <div><h3>Informasi Rapat</h3><p class="muted small">Data dasar rapat</p></div>
+            </div>
+            <div class="form-grid">
+              <label class="span-2 lbl">Judul rapat
+                <input name="judul" required maxlength="200" placeholder="Contoh: Rapat Koordinasi Proyek Q4">
+              </label>
+              <label class="lbl">Tanggal <input type="date" name="tanggal" required></label>
+              <label class="lbl">Waktu <input type="time" name="waktu"></label>
+              <label class="lbl">Tempat <input name="tempat" maxlength="200" placeholder="Ruang rapat / daring"></label>
+              <label class="lbl">Status
+                <select name="status">
+                  <option value="Draf">Draf</option>
+                  <option value="Final">Final</option>
+                </select>
+              </label>
+              <label class="lbl">Pimpinan rapat <input name="pimpinan" maxlength="120"></label>
+              <label class="lbl">Notulis <input name="notulis" maxlength="120"></label>
+            </div>
+          </div>
+
+          <!-- Peserta -->
+          <div class="card sec" style="--c:#0ea5e9">
+            <div class="sec-head">
+              <span class="sec-icon"><i data-lucide="users"></i></span>
+              <div><h3>Peserta &amp; Kehadiran</h3><p class="muted small">Centang peserta yang hadir</p></div>
+              <button type="button" class="btn btn-soft btn-sm" data-add="peserta"><i data-lucide="plus"></i> Tambah</button>
+            </div>
+            <div id="peserta-list" class="dyn"></div>
+          </div>
+
+          <!-- Agenda -->
+          <div class="card sec" style="--c:#8b5cf6">
+            <div class="sec-head">
+              <span class="sec-icon"><i data-lucide="list-ordered"></i></span>
+              <div><h3>Agenda</h3><p class="muted small">Daftar pokok bahasan rapat</p></div>
+            </div>
+            <textarea name="agenda" rows="3" placeholder="1. …&#10;2. …"></textarea>
+          </div>
+
+          <!-- Pembahasan -->
+          <div class="card sec" style="--c:#ec4899">
+            <div class="sec-head">
+              <span class="sec-icon"><i data-lucide="message-square"></i></span>
+              <div>
+                <h3>Pembahasan</h3>
+                <p class="muted small">Setiap pembahasan diberi judul. Isi poin-poinnya, satu poin per baris.</p>
+              </div>
+              <button type="button" class="btn btn-soft btn-sm" data-add="bahasan"><i data-lucide="plus"></i> Tambah pembahasan</button>
+            </div>
+            <div id="bahasan-list" class="bh-list"></div>
+          </div>
+
+          <!-- Keputusan -->
+          <div class="card sec" style="--c:#10b981">
+            <div class="sec-head">
+              <span class="sec-icon"><i data-lucide="gavel"></i></span>
+              <div><h3>Keputusan</h3><p class="muted small">Satu keputusan per baris</p></div>
+            </div>
+            <textarea name="keputusan" rows="4"></textarea>
+          </div>
+
+          <!-- Tindak lanjut -->
+          <div class="card sec" style="--c:#f59e0b">
+            <div class="sec-head">
+              <span class="sec-icon"><i data-lucide="clipboard-list"></i></span>
+              <div><h3>Tindak Lanjut</h3><p class="muted small">Tugas, PIC, dan tenggat</p></div>
+              <button type="button" class="btn btn-soft btn-sm" data-add="tindak"><i data-lucide="plus"></i> Tambah</button>
+            </div>
+            <div id="tindak-list" class="dyn"></div>
+          </div>
+
+          <div class="editor-footer">
+            <button type="button" id="btn-delete" class="btn btn-danger btn-sm"><i data-lucide="trash-2"></i> Hapus rapat</button>
+          </div>
+        </form>
+      </section>
+
+      <!-- ===== Laporan ===== -->
+      <section id="page-report" class="page hidden">
+        <header class="page-head">
+          <div>
+            <h2>Laporan Rapat</h2>
+            <p class="muted">Rekap rapat, keputusan, dan status tindak lanjut per periode</p>
+          </div>
+          <button id="btn-print" class="btn btn-primary"><i data-lucide="printer"></i> Cetak / PDF</button>
+        </header>
+
+        <form id="form-report" class="card filter">
+          <label class="field">Dari <input type="date" name="from" required></label>
+          <label class="field">Sampai <input type="date" name="to" required></label>
+          <button class="btn btn-primary" type="submit"><i data-lucide="filter"></i> Tampilkan</button>
+        </form>
+
+        <div id="report-body"></div>
+      </section>
+
+    </main>
+
+    <!-- Tab bar (mobile) -->
+    <nav class="tabbar">
+      <button class="nav-btn active" data-nav="list"><i data-lucide="layout-list"></i><span>Rapat</span></button>
+      <button class="nav-btn tab-add" id="tab-add"><i data-lucide="plus-circle"></i><span>Baru</span></button>
+      <button class="nav-btn" data-nav="report"><i data-lucide="bar-chart-2"></i><span>Laporan</span></button>
+    </nav>
+  </div>
+
+  <!-- Area cetak (tersembunyi di layar) -->
+  <div id="print-area"></div>
+  <div id="toast" class="toast hidden" role="status"></div>
+
+  <script src="config.js"></script>
+  <script src="api.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
