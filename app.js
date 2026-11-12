@@ -196,14 +196,36 @@ function fillEditor(m) {
   f.reset();
   FIELDS.forEach(k => { if (f[k]) f[k].value = m[k] ?? ''; });
 
-  state.peserta = (m.peserta || []).map(p => ({ ...p }));
-  state.tindak  = (m.tindak || []).map(t => ({ ...t }));
-  state.bahasan = (m.pembahasan || []).map(b => ({ judul: b.judul || '', isi: b.isi || '' }));
+  state.peserta = toArr(m.peserta).map(p => ({ nama: p.nama || '', hadir: !!p.hadir }));
+  state.tindak  = toArr(m.tindak).map(t => ({ ...t }));
+  state.bahasan = toBahasan(m.pembahasan);
 
   $('#editor-title').textContent = m.id ? 'Edit Notulen' : 'Rapat Baru';
   $('#btn-delete').classList.toggle('hidden', !m.id);
   renderDyn();
   showPage('editor');
+}
+
+/** Pastikan nilai berupa array (berjaga jika backend mengembalikan teks atau null). */
+function toArr(v) {
+  if (Array.isArray(v)) return v;
+  if (typeof v === 'string' && v.trim()) {
+    try { const p = JSON.parse(v); if (Array.isArray(p)) return p; } catch (_) {}
+  }
+  return [];
+}
+
+/** Pembahasan: array {judul, isi}. Teks biasa dari data lama dijadikan satu blok. */
+function toBahasan(v) {
+  if (Array.isArray(v)) return v.map(b => ({ judul: b.judul || '', isi: b.isi || '' }));
+  if (typeof v === 'string' && v.trim()) {
+    try {
+      const p = JSON.parse(v);
+      if (Array.isArray(p)) return toBahasan(p);
+    } catch (_) {}
+    return [{ judul: '', isi: v }];
+  }
+  return [];
 }
 
 function renderDyn() {
